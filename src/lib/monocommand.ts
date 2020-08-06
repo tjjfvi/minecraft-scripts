@@ -1,4 +1,6 @@
 
+import { escape } from "./escape";
+
 export const makeMonocommand = (commands: string[], position = "~ ~ ~") => {
   console.log(commands)
   const initial = `execute if block ~ ~ ~ command_block run summon falling_block ${position} {Time:1,BlockState:{Name:redstone_block},Passengers:[{id:armor_stand,Health:0,Passengers:[{id:falling_block,Time:1,BlockState:{Name:activator_rail},Passengers:[{id:command_block_minecart,Command:'gamerule commandBlockOutput false'},`;
