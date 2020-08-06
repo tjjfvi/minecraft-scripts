@@ -28,7 +28,7 @@ export interface TowerCommand {
 
 export const makeTower = (_commands: (string | TowerCommand)[], setup: string[] = [], teardown: string[] = []) => {
   const commands = _commands.map(c => typeof c === "string" ? { command: c } : c).map((c, i) => ({ ...c, index: i }));
-  const height = commands.length + 2 + 1;
+  const height = commands.length + 2;
   console.log(commands)
   return makeMonocommand([
     ...commands.map((cmd, i) =>
@@ -36,8 +36,13 @@ export const makeTower = (_commands: (string | TowerCommand)[], setup: string[] 
         (cmd.toggle ? `execute if block ~ ~ ~2 lever[powered=true] run ` : "") + cmd.command
       )}",auto:1b}`
     ),
-    `setblock ~-3 ~${height - 3} ~ command_block[facing=up]{Command:"${escape(
+    `setblock ~-3 ~ ~ air replace lever`,
+    `clone ~-3 ~-1 ~ ~-3 ~-1 ~ ~-3 ~-2 ~ masked move`,
+    `setblock ~-3 ~-1 ~ command_block[facing=up]{Command:"${escape(
       makeMonocommand([
+        `setblock ~-3 ~-1 ~2 air`,
+        `clone ~-3 ~-2 ~ ~-3 ~-2 ~ ~-3 ~-1 ~ masked move`,
+        `setblock ~-3 ~-2 ~ obsidian`,
         `fill ~-5 ~${height - 1} ~-2 ~-1 ~ ~2 stone`,
         `fill ~-5 ~${height - 1} ~-2 ~-1 ~ ~2 air`,
         `fill ~-4 ~-1 ~-1 ~-2 ~-1 ~1 air replace obsidian`,
@@ -46,7 +51,7 @@ export const makeTower = (_commands: (string | TowerCommand)[], setup: string[] 
           `execute positioned ~-2 ~${cmd.index} ~2 run kill @e[type=item_frame,distance=..1,limit=1]`,
         ),
         ...teardown,
-      ], `~3 ~${-height + 2} ~`)
+      ], `~3 ~ ~`)
     )}",auto:0b}`,
     `fill ~-4 ~-1 ~-1 ~-4 ~${height - 2} ~1 obsidian`,
     `fill ~-2 ~-1 ~-1 ~-2 ~${height - 2} ~1 obsidian`,
@@ -54,7 +59,7 @@ export const makeTower = (_commands: (string | TowerCommand)[], setup: string[] 
     `fill ~-4 ~-1 ~1 ~-2 ~${height - 2} ~1 obsidian`,
     `fill ~-4 ~ ~-1 ~-2 ~${height - 3} ~1 glass replace obsidian`,
     `setblock ~-3 ~${height - 2} ~ obsidian`,
-    `setblock ~-3 ~${height - 1} ~ lever[face=floor,facing=south]`,
+    `setblock ~-3 ~-1 ~2 lever[face=wall,facing=south]`,
     // ...Array(height - 2).fill(undefined).flatMap((_, h) => [
     //   torchLookup(h)[h % 12],
     //   torchLookup(h)[(h + 6) % 12],
